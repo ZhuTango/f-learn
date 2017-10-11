@@ -53,18 +53,20 @@ export default {
     hide: function () {
       console.log(this.hide)
       if (!this.hide) {
-        this.content = this.getHideArtical(this.editedArtical.content)
+        this.content = this.getHideArtical1(this.editedArtical.content)
       } else {
         // this.content = this.editedArtical.content
-        this.content = this.getHideArtical(this.editedArtical.content)
+        this.content = this.getHideArtical1(this.editedArtical.content)
       }
     },
     odd: function () {
       console.log(this.odd)
-      this.content = this.getHideArtical(this.editedArtical.content)
+      this.content = this.getHideArtical1(this.editedArtical.content)
     },
     artical: function () {
-      this.content = this.getHideArtical(this.editedArtical.content)
+      console.log(this.artical)
+      this.content = this.getHideArtical1(this.editedArtical.content)
+      this.getHideArtical1(this.editedArtical.content)
     }
   },
   methods: {
@@ -97,12 +99,73 @@ export default {
               odd = this.odd
             }
           }
-          if (artical[i] === '。' || artical[i] === '！') {
+          if (artical[i] === '。' || artical[i] === '！' || artical[i] === '!' || artical[i] === '.' || artical[i] === ',') {
             result += '</br>'
             odd = this.odd
           }
         }
       }
+      return result
+    },
+    getHideArtical1: function (artical) {
+      let result = ''
+      let temp = []
+      let odd = this.odd
+      let regCN = /[\u4e00-\u9fa5]/gm
+      let regEN = /^[a-z0-9A-Z"' ,]+$/i
+      let regEN1 = /^[a-z0-9A-Z"']+$/i
+      let regSig = /^[ ？?.。，,']+$/i
+      console.log(artical)
+      for (let i = 0; i < artical.length; i++) {
+        if (regCN.test(artical[i])) {
+          temp.push(artical[i])
+        } else if (regEN.test(artical[i])) {
+          // console.log(temp[temp.length - 1])
+          // console.log(regEN.test(temp[temp.length - 1]))
+          console.log(temp.length > 1)
+          if (temp.length > 0) {
+            if (!regEN1.test(temp[temp.length - 1])) {
+              temp.push('')
+            }
+            temp[temp.length - 1] += artical[i]
+          } else {
+            temp.push(artical[i])
+          }
+        } else {
+          temp.push(artical[i])
+        }
+        // console.log(temp[temp.length - 1])
+      }
+      // console.log(temp)
+
+      for (let i = 0; i < temp.length; i++) {
+        if (temp[i] !== ' ') {
+          console.log(i + ' ' + odd)
+          if (odd) {
+            result += temp[i]
+            odd = false
+          } else {
+            if (regCN.test(temp[i])) {
+              console.log(this.hide)
+              if (this.hide) {
+                result += temp[i]
+              } else {
+                result += ' ✘ '
+              }
+              odd = true
+            } else {
+              result += temp[i]
+              odd = this.odd
+            }
+          }
+          if (regSig.test(temp[i])) {
+            console.log(temp[i])
+            result += '</br>'
+            odd = this.odd
+          }
+        }
+      }
+      console.log(result)
       return result
     }
   }
